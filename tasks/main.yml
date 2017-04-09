@@ -10,5 +10,5 @@
     - name: Setup and run xfs-guard service
       service: name="xfs-guard" state=started enabled=yes
 
-    become: yes
+  become: yes
 
