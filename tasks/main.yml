@@ -1,0 +1,14 @@
+---
+- block:
+    - name: Copy xfs-guard files
+      copy: src="{{ item.path }}" dest="/{{ item.path }}" owner=root group=root mode="{{ item.mode }}"
+      with_items:
+        - { path: "usr/local/sbin/xfs-guard", mode: "0744" }
+        - { path: "etc/default/xfs-guard", mode: "0644" }
+        - { path: "etc/init/xfs-guard.conf", mode: "0644" }
+
+    - name: Setup and run xfs-guard service
+      service: name="xfs-guard" state=started enabled=yes
+
+    become: yes
+

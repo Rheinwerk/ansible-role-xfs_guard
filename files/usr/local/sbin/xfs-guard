@@ -1,0 +1,33 @@
+#!/bin/bash
+# vim: ft=sh ts=4 noet
+
+function emit_bosun {
+  if [[ -x /usr/local/bin/emit_bosun ]]; then
+	/usr/local/bin/emit_bosun ${*}
+  fi
+}
+
+if [[ -z "${SEARCHTERM}" || -z "${MONITORED_LOG}" || -z "${STATEFILE}" || -z "${THRESHOLD_SECONDS}" ]]; then
+		echo "${0}: Missing one or more required environment variables." >&2
+		exit 1;
+fi
+
+tail -n 1 -F "${MONITORED_LOG}" | grep --line-buffered "${SEARCHTERM}" |  awk '{ print systime(); fflush(); }' | while read -r found_at_time; do
+		emit_bosun -m xfs-guard.events.xfs-allocation-deadlock.found  -v 1 --tags service=centerdevice -r gauge -u None -d "Found a kernel log line regarding XFS memory allocation drop."
+		if [[ -r "${STATEFILE}" ]]; then
+				last_dropped_caches_at=$(cat "${STATEFILE}")
+		else
+				last_dropped_caches_at=0
+		fi
+		difference=$(( ${found_at_time} - ${last_dropped_caches_at}))
+
+		if [[ ${difference} -ge ${THRESHOLD_SECONDS}  ]]; then
+				echo 2 > /proc/sys/vm/drop_caches
+				date +%s > "${STATEFILE}"
+				logger -t xfs-guard "Dropped slab cache"
+				emit_bosun -m xfs-guard.events.drop.slab -v 1 -r gauge -u None -d "1 = dropped slab cache -- echo 2 > /proc/sys/vm/drop_caches"
+		else
+				logger -t xfs-guard "Withstood the urge to drop slab cache, because last time was less than ${THRESHOLD_SECONDS}s ago."
+				emit_bosun -m xfs-guard.events.skipped.slab -v 1 -r gauge -u None -d "1 = didn't drop slab cache, because requested too often in quick succession"
+		fi
+done
