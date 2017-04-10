@@ -7,7 +7,7 @@ mitigate the issue for a limited time.
 
 [![Build Status](https://travis-ci.org/Rheinwerk/ansible-role-xfs_guard.svg?branch=master)](https://travis-ci.org/Rheinwerk/ansible-role-xfs_guard)
 
-For more details, see the accompanying blog post on the [codecentric blog](https://blog.codecentric.de).
+For more details, see the accompanying blog post on the [codecentric blog](https://blog.codecentric.de/en/2017/04/xfs-possible-memory-allocation-deadlock-kmem_alloc/).
 
 
 Requirements
