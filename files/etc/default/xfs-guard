@@ -1,5 +1,5 @@
 SEARCHTERM="XFS: possible memory allocation deadlock in kmem_alloc"
 MONITORED_LOG="/var/log/syslog"
 STATEFILE="/run/xfs-guard.txt"
-THRESHOLD_SECONDS=10
+THRESHOLD_SECONDS=60
 ENABLED=1
