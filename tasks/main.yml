@@ -11,4 +11,3 @@
       service: name="xfs-guard" state=started enabled=yes
 
   become: yes
-
