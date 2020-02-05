@@ -20,6 +20,7 @@ install:
 
   # Check ansible version
   - ansible --version
+  - pip install yamllint
 
   # Create ansible.cfg with correct roles_path
   - printf '[defaults]\nroles_path=../' >ansible.cfg
