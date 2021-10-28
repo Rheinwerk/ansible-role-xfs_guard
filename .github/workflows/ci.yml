@@ -1,0 +1,57 @@
+---
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+
+  lint:
+    name: CI for Ansible ${{ matrix.ansible-version }} / ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Teste alle Kombinationen, auch wenn 1 Job fehlschlägt
+      fail-fast: false
+      matrix:
+        # Nutze die letzten Patch Versionen
+        ansible-version: [ '>=2.9, <2.10', '>=2.10, <2.11' ]
+        os: [ 'ubuntu-18.04', 'ubuntu-20.04' ]
+        # Python Default Versions: 3.6 in Bionic, 3.8 in Focal
+        python-version: [ '3.6', '3.8' ]
+
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v2
+
+      # Alternativ könnte man auch pip / setuptools über apt installieren, dies dauert nur ewig lang im Vergleich
+      # 18.04 braucht dann auch noch Rust aufgrund pip <-> cryptography > 3.4  Abhängigkeit: https://github.com/pyca/cryptography/issues/5771#issuecomment-775016788
+      # Das können wir uns alles sparen
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Ansible ${{ matrix.ansible-version }}
+        run: pip3 install 'ansible${{ matrix.ansible-version }}'
+
+      # Yamllint ist bereits im Ubuntu Image enthalten: https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md
+      - name: Check versions
+        run: |
+          ansible --version
+          yamllint --version
+
+      - name: Create ansible.cfg with correct roles_path
+        run: |
+          printf '[defaults]\nroles_path=../' >ansible.cfg
+
+      - name: Run Checks
+        run: |
+          find . -name '*.yml' -print0 | xargs -0 yamllint -c galaxy-yamllint.yaml
+          cd tests; ansible-playbook test.yml -i inventory --syntax-check
+          ./run_tests.sh
+        env:
+          ANSIBLE_FORCE_COLOR: '1'

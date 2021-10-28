@@ -5,7 +5,7 @@ This role can be used to install a mitigation for XFS memory allocation
 deadlocks. It does _not_ solve the actual cause, but can be used to
 mitigate the issue for a limited time.
 
-[![Build Status](https://travis-ci.org/Rheinwerk/ansible-role-xfs_guard.svg?branch=master)](https://travis-ci.org/Rheinwerk/ansible-role-xfs_guard)
+[![Build Status](https://github.com/Rheinwerk/ansible-role-xfs_guard/actions/workflows/ci.yml/badge.svg)](https://github.com/Rheinwerk/ansible-role-xfs_guard/actions/workflows/ci.yml)
 
 For more details, see the accompanying blog post on the [codecentric blog](https://blog.codecentric.de/en/2017/04/xfs-possible-memory-allocation-deadlock-kmem_alloc/).
 
