@@ -1,5 +1,5 @@
-export SEARCHTERM="XFS: possible memory allocation deadlock in kmem_alloc"
-export MONITORED_LOG="/var/log/syslog"
-export STATEFILE="/run/xfs-guard.txt"
-export THRESHOLD_SECONDS=10
-export ENABLED=1
+SEARCHTERM="XFS: possible memory allocation deadlock in kmem_alloc"
+MONITORED_LOG="/var/log/syslog"
+STATEFILE="/var/run/xfs-guard.txt"
+THRESHOLD_SECONDS=60
+ENABLED=1

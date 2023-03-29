@@ -1,0 +1,10 @@
+[Unit]
+Description=XFS guard
+
+[Service]
+EnvironmentFile=/etc/default/xfs-guard
+ExecStart=/usr/local/sbin/xfs-guard
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
